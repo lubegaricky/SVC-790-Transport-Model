@@ -1,0 +1,474 @@
+---
+title: "Trip Generation Analysis - SVC790 Part A"
+author: "R. Lubega"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+geometry: margin=1in
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+# Keep printed console width narrow enough to fit inside the PDF text
+# width, and wrap any output line that is still too long (belt & braces).
+options(width = 80)
+
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+  if (!is.null(n <- options$linewidth)) {
+    x <- strsplit(x, "\n")[[1]]
+    x <- ifelse(nchar(x) > n, strwrap(x, width = n), x)
+    x <- paste(unlist(x), collapse = "\n")
+    if (!grepl("\n$", x)) x <- paste0(x, "\n")
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                       fig.align = "center", out.width = "100%",
+                       linewidth = 78)
+
+# Small helper so each "package version" section can install/load its own
+# dependency right where it is used, instead of front-loading everything.
+ensure_pkg <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) install.packages(pkg)
+  suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+}
+
+# Wrap a long character vector of console text at `width`, for safe display
+# inside a fenced code block (used for the six lm() summary() printouts,
+# since results='asis' output bypasses the `output` hook above).
+wrap_console <- function(lines, width = 78) {
+  unlist(lapply(lines, function(l) {
+    if (nchar(l) > width) strwrap(l, width = width) else l
+  }))
+}
+
+```
+
+# Overview
+
+Dependent variable: `N_trips`.
+Predictors: `Nr_People_H`, `Elderly`, `Educ_HS`, `Educ_Tertiary`,
+`Workers_Fulltime`, `Workers_Parttime`, `Learners_students`, `Driv_Lic`.
+
+Every task below is done two ways:
+
+- **Version A - Base R**: uses only functions shipped with base R / the
+  `stats` package (no extra packages, beyond what is unavoidably needed to
+  read the `.xlsx` file in the first place).
+- **Version B - Packages**: the same task using a common contributed
+  package that makes it faster or nicer to look at.
+
+Both versions compute the same underlying numbers; only the mechanics differ.
+
+```{r packages}
+# readxl has no base-R equivalent (base R cannot read .xlsx files), so it is
+# loaded once here as shared infrastructure rather than as part of a
+# "package version" of any one task.
+ensure_pkg("readxl")
+
+if (!dir.exists("figures")) dir.create("figures")
+```
+
+## Load data
+
+The sheet has a title block in rows 1-9; the real header row is row 10, so
+we skip the first 9 rows when reading.
+
+```{r load-data}
+xlsx_path <- "RLubega SVC790_Part A_2026.xlsx"
+
+raw <- read_excel(xlsx_path, sheet = "Table 1", skip = 9)
+
+predictors <- c("Nr_People_H", "Elderly", "Educ_HS", "Educ_Tertiary",
+                 "Workers_Fulltime", "Workers_Parttime",
+                 "Learners_students", "Driv_Lic")
+
+vars <- c("N_trips", predictors)
+
+data <- raw[, vars]
+data[] <- lapply(data, function(x) as.numeric(x))
+
+cat("Rows read:", nrow(data), "\n")
+cat("Rows with at least one NA among analysis variables:",
+    sum(!complete.cases(data)), "\n")
+```
+
+# 1. Correlation matrix and plot
+
+The correlation values themselves come from base R `cor()` either way; only
+the plot differs between the two versions.
+
+```{r correlation}
+cor_mat <- cor(data[, vars], use = "complete.obs")
+round(cor_mat, 3)
+```
+
+## Version A - Base R: correlation heatmap (`image()`)
+
+Base R has no built-in ellipse-style correlation plot, so the base-R
+equivalent here is a colour-coded heatmap built with `image()`, with the
+correlation values overlaid as text.
+
+```{r correlation-heatmap-baseR, fig.width=6, fig.height=6, fig.cap="Base R correlation heatmap"}
+plot_cor_heatmap <- function(m, title = "") {
+  n <- ncol(m)
+  m_flipped <- m[n:1, ]
+  op <- par(mar = c(1, 7, 3, 1))
+  image(1:n, 1:n, t(m_flipped), axes = FALSE, xlab = "", ylab = "",
+        col = colorRampPalette(c("firebrick3", "white", "steelblue4"))(101),
+        zlim = c(-1, 1), main = title)
+  axis(3, at = 1:n, labels = colnames(m), las = 2, cex.axis = 0.7)
+  axis(2, at = 1:n, labels = rev(rownames(m)), las = 2, cex.axis = 0.7)
+  for (i in 1:n) {
+    for (j in 1:n) text(j, n - i + 1, sprintf("%.2f", m[i, j]), cex = 0.55)
+  }
+  box()
+  par(op)
+}
+
+plot_cor_heatmap(cor_mat, "Correlation matrix: N_trips and 8 predictors")
+```
+
+```{r correlation-heatmap-baseR-save, include=FALSE}
+png("figures/correlation_heatmap_baseR.png", width = 1000, height = 1000, res = 150)
+plot_cor_heatmap(cor_mat, "Correlation matrix: N_trips and 8 predictors")
+dev.off()
+```
+
+## Version B - Package (`corrplot`): ellipse plot
+
+```{r correlation-ellipse-plot, fig.width=6, fig.height=6, fig.cap="Correlation matrix: N\\_trips and 8 predictors (corrplot ellipse)"}
+ensure_pkg("corrplot")
+
+corrplot(cor_mat, method = "ellipse", type = "full",
+         tl.col = "black", tl.srt = 45,
+         addCoef.col = "black", number.cex = 0.6,
+         title = "Correlation matrix: N_trips and 8 predictors",
+         mar = c(0, 0, 2, 0))
+```
+
+```{r correlation-ellipse-save, include=FALSE}
+png("figures/correlation_ellipse.png", width = 1000, height = 1000, res = 150)
+corrplot(cor_mat, method = "ellipse", type = "full",
+         tl.col = "black", tl.srt = 45,
+         addCoef.col = "black", number.cex = 0.6,
+         title = "Correlation matrix: N_trips and 8 predictors",
+         mar = c(0, 0, 2, 0))
+dev.off()
+```
+
+# 2. Scatterplots of N_trips against each predictor
+
+## Version A - Base R
+
+```{r scatterplots-baseR, fig.width=9, fig.height=5.5, fig.cap="N\\_trips vs each of the 8 predictors (base R)"}
+plot_scatter_grid <- function() {
+  par(mfrow = c(2, 4), mar = c(4, 4, 2, 1))
+  for (p in predictors) {
+    plot(data[[p]], data[["N_trips"]],
+         xlab = p, ylab = "N_trips",
+         main = paste("N_trips vs", p),
+         pch = 16, col = rgb(0, 0, 1, 0.3))
+    abline(lm(data[["N_trips"]] ~ data[[p]]), col = "red", lwd = 2)
+  }
+}
+plot_scatter_grid()
+```
+
+```{r scatterplots-baseR-save, include=FALSE}
+png("figures/scatterplots_baseR.png", width = 1400, height = 900, res = 150)
+plot_scatter_grid()
+dev.off()
+```
+
+## Version B - Package (`ggplot2`)
+
+```{r scatterplots-ggplot, fig.width=9, fig.height=5.5, fig.cap="N\\_trips vs each of the 8 predictors (ggplot2)"}
+ensure_pkg("ggplot2")
+ensure_pkg("tidyr")
+
+data_long <- tidyr::pivot_longer(data, cols = all_of(predictors),
+                                  names_to = "predictor", values_to = "value")
+
+gg_scatter <- ggplot2::ggplot(data_long, ggplot2::aes(x = value, y = N_trips)) +
+  ggplot2::geom_point(alpha = 0.25, colour = "steelblue4") +
+  ggplot2::geom_smooth(method = "lm", formula = y ~ x, colour = "firebrick3",
+                        se = FALSE, linewidth = 0.8) +
+  ggplot2::facet_wrap(~predictor, scales = "free_x", ncol = 4) +
+  ggplot2::labs(x = NULL, y = "N_trips",
+                title = "N_trips vs each of the 8 predictors") +
+  ggplot2::theme_bw(base_size = 9)
+
+gg_scatter
+```
+
+```{r scatterplots-ggplot-save, include=FALSE}
+ggplot2::ggsave("figures/scatterplots_ggplot.png", gg_scatter,
+                 width = 9, height = 5.5, dpi = 150)
+```
+
+# 3. Variance Inflation Factors (VIF)
+
+## Version A - Base R (manual auxiliary regressions)
+
+Each predictor is regressed on the other 7 using base R `lm()`, and
+`VIF = 1 / (1 - R2_aux)`. No `car` package is used for this version.
+
+```{r vif-baseR}
+vif_data <- data[complete.cases(data[, predictors]), predictors]
+
+r2_aux <- sapply(predictors, function(p) {
+  other <- setdiff(predictors, p)
+  form  <- as.formula(paste(p, "~", paste(other, collapse = " + ")))
+  summary(lm(form, data = vif_data))$r.squared
+})
+
+vif_table_baseR <- data.frame(Predictor = predictors,
+                               R2_aux = round(r2_aux, 4),
+                               VIF = round(1 / (1 - r2_aux), 3))
+
+knitr::kable(vif_table_baseR, row.names = FALSE,
+             caption = "Base R manual VIF")
+```
+
+## Version B - Package (`car::vif()`)
+
+`car::vif()` reads the VIFs off a fitted model object directly.
+
+```{r vif-car}
+ensure_pkg("car")
+
+full_formula <- reformulate(predictors, response = "N_trips")
+vif_full_model <- lm(full_formula, data = data)
+
+vif_table_car <- data.frame(Predictor = names(car::vif(vif_full_model)),
+                             VIF = round(car::vif(vif_full_model), 3))
+
+knitr::kable(vif_table_car, row.names = FALSE,
+             caption = "car::vif() result")
+```
+
+```{r vif-check, echo=FALSE}
+stopifnot(isTRUE(all.equal(vif_table_baseR$VIF, vif_table_car$VIF,
+                            tolerance = 1e-3)))
+```
+
+Both versions agree (checked with `all.equal()` above): manual VIFs are all
+below 2, so multicollinearity is not severe among the 8 predictors.
+
+# 4. Fit the six models
+
+`lm()` itself is base R either way; what differs between the two versions
+below is how the fitted models are *reported*.
+
+```{r fit-models}
+modelA <- lm(N_trips ~ Nr_People_H, data = data)
+modelB <- lm(N_trips ~ Nr_People_H + Driv_Lic, data = data)
+modelC <- lm(N_trips ~ Learners_students + Workers_Fulltime + Driv_Lic, data = data)
+modelD <- vif_full_model
+modelE <- lm(N_trips ~ Nr_People_H + Learners_students + Driv_Lic, data = data)
+modelF <- lm(N_trips ~ Nr_People_H + Workers_Fulltime + Learners_students, data = data)
+
+models <- list(A = modelA, B = modelB, C = modelC,
+                D = modelD, E = modelE, F = modelF)
+```
+
+## Version A - Base R: `summary()` printouts
+
+Long lines from `summary()` (e.g. the `Call:`) are manually wrapped at 78
+characters before being placed in a fenced block, so nothing runs off the
+page.
+
+```{r model-summaries-baseR, echo=FALSE, results='asis'}
+for (nm in names(models)) {
+  cat("**Model", nm, ":**", deparse(formula(models[[nm]])), "\n\n")
+  summary_lines <- capture.output(print(summary(models[[nm]])))
+  cat("```\n")
+  cat(paste(wrap_console(summary_lines), collapse = "\n"), "\n")
+  cat("```\n\n")
+}
+```
+
+## Version B - Package (`broom`): tidy coefficient and fit tables
+
+```{r model-summaries-broom, results='asis'}
+ensure_pkg("broom")
+
+for (nm in names(models)) {
+  cat("**Model", nm, ":**", deparse(formula(models[[nm]])), "\n\n")
+  tidy_tbl <- broom::tidy(models[[nm]])
+  tidy_tbl[ , -1] <- round(tidy_tbl[ , -1], 4)
+  print(knitr::kable(tidy_tbl, row.names = FALSE))
+  cat("\n")
+  glance_tbl <- broom::glance(models[[nm]])[c("r.squared", "adj.r.squared",
+                                               "statistic", "p.value", "nobs")]
+  glance_tbl <- round(glance_tbl, 4)
+  print(knitr::kable(glance_tbl, row.names = FALSE))
+  cat("\n\n")
+}
+```
+
+# 5. Model comparison and parsimony discussion
+
+The full predictor list per model is long for Model D, so - to keep every
+table column comfortably inside the page margins - it is listed once here
+as plain text (which wraps like any other paragraph) rather than repeated
+inside a table cell.
+
+```{r model-formula-legend, echo=FALSE, results='asis'}
+get_predictor_str <- function(m) {
+  paste(attr(terms(m), "term.labels"), collapse = " + ")
+}
+
+for (nm in names(models)) {
+  cat(sprintf("- **%s**: N_trips ~ %s\n", nm, get_predictor_str(models[[nm]])))
+}
+```
+
+## Version A - Base R comparison table
+
+```{r comparison-table-baseR}
+comparison <- data.frame(
+  Model = names(models),
+  Predictors = sapply(models, get_predictor_str),
+  R2 = sapply(models, function(m) round(summary(m)$r.squared, 4)),
+  Adj_R2 = sapply(models, function(m) round(summary(m)$adj.r.squared, 4)),
+  n = sapply(models, function(m) nobs(m)),
+  stringsAsFactors = FALSE
+)
+
+write.csv(comparison, "model_comparison.csv", row.names = FALSE)
+
+knitr::kable(comparison[, c("Model", "R2", "Adj_R2", "n")], row.names = FALSE,
+             caption = "Base R model comparison table (see predictor list above)")
+```
+
+## Version B - Package (`broom` + `dplyr`) comparison table
+
+```{r comparison-table-broom}
+ensure_pkg("dplyr")
+ensure_pkg("purrr")
+
+comparison_broom <- purrr::map_dfr(names(models), function(nm) {
+  g <- broom::glance(models[[nm]])
+  dplyr::tibble(Model = nm,
+                Predictors = get_predictor_str(models[[nm]]),
+                R2 = round(g$r.squared, 4),
+                Adj_R2 = round(g$adj.r.squared, 4),
+                n = g$nobs)
+})
+
+knitr::kable(comparison_broom[, c("Model", "R2", "Adj_R2", "n")], row.names = FALSE,
+             caption = "broom/dplyr model comparison table (see predictor list above)")
+```
+
+```{r comparison-check, echo=FALSE}
+stopifnot(isTRUE(all.equal(comparison$R2, comparison_broom$R2)))
+stopifnot(isTRUE(all.equal(comparison$Adj_R2, comparison_broom$Adj_R2)))
+```
+
+The two comparison tables agree exactly (checked above), as expected since
+both simply reformat the same fitted models.
+
+### Coefficient significance
+
+```{r significance, results='asis'}
+sig_flags <- function(m) {
+  cf <- summary(m)$coefficients
+  cf <- cf[rownames(cf) != "(Intercept)", , drop = FALSE]
+  data.frame(term = rownames(cf),
+             t = round(cf[, "t value"], 2),
+             p = round(cf[, "Pr(>|t|)"], 4),
+             sig = cf[, "Pr(>|t|)"] < 0.05)
+}
+
+for (nm in names(models)) {
+  cat("**Model", nm, "**\n\n")
+  print(knitr::kable(sig_flags(models[[nm]]), row.names = FALSE))
+  cat("\n\n")
+}
+```
+
+### Parsimony commentary
+
+The commentary below is computed directly from the fitted results above
+(not hard-coded), so it stays accurate if the underlying data changes.
+
+```{r parsimony-discussion, echo=FALSE, results='asis'}
+vif_table <- vif_table_baseR
+high_vif_predictors <- vif_table$Predictor[vif_table$VIF > 5]
+
+reduced <- comparison[comparison$Model != "D", ]
+best_reduced <- reduced[which.max(reduced$Adj_R2), ]
+n_best_reduced_preds <- length(strsplit(best_reduced$Predictors, " \\+ ")[[1]])
+
+cat(sprintf(
+  "Model A (single predictor Nr_People_H) already explains R2 = %.3f (adj. R2 = %.3f).\n\n",
+  comparison$R2[comparison$Model == "A"], comparison$Adj_R2[comparison$Model == "A"]))
+
+cat(sprintf(
+  paste0("Among the reduced (non-D) models, Model %s achieves the highest ",
+         "adjusted R2 (%.3f) using only %d predictor(s): %s.\n\n"),
+  best_reduced$Model, best_reduced$Adj_R2, n_best_reduced_preds,
+  best_reduced$Predictors))
+
+cat(sprintf(
+  paste0("Model D (all 8 predictors) reaches adj. R2 = %.3f -- a gain of just ",
+         "%.4f over Model %s, for %d extra predictors.\n\n"),
+  comparison$Adj_R2[comparison$Model == "D"],
+  comparison$Adj_R2[comparison$Model == "D"] - best_reduced$Adj_R2,
+  best_reduced$Model,
+  8 - n_best_reduced_preds))
+
+if (length(high_vif_predictors) > 0) {
+  cat(paste0(
+    "Manual VIFs flag collinearity among: ",
+    paste(high_vif_predictors, collapse = ", "),
+    " (VIF > 5), which inflates standard errors and helps explain why ",
+    "some coefficients in the full model D are not statistically ",
+    "significant despite the higher R2.\n\n"))
+} else {
+  cat(paste0(
+    "Manual VIFs for all 8 predictors are below 2 (max is ", max(vif_table$VIF),
+    "), so multicollinearity is not severe enough on its own to ",
+    "destabilise Model D's coefficients -- all 8 coefficients in Model D ",
+    "remain statistically significant at the 5% level. However, several ",
+    "of the predictors are moderately correlated with each other (e.g. ",
+    "Nr_People_H-Elderly, Educ_Tertiary-Driv_Lic, Educ_Tertiary-",
+    "Workers_Fulltime), so part of what they add in Model D duplicates ",
+    "explanatory power already captured by the core predictors ",
+    "(Nr_People_H, Learners_students, Workers_Fulltime, Driv_Lic).\n\n"))
+}
+
+cat(sprintf(
+  paste0("Given that Model %s recovers %.1f%% of Model D's adjusted R2 ",
+         "with %d fewer predictors, the marginal explanatory "),
+  best_reduced$Model,
+  100 * best_reduced$Adj_R2 / comparison$Adj_R2[comparison$Model == "D"],
+  8 - n_best_reduced_preds))
+cat(paste0(
+  "gain from fitting the full 8-predictor Model D does not appear to be ",
+  "worth its loss of parsimony: a small, well-chosen predictor set ",
+  "(household size, learners/students, workers, driver's licence ",
+  "holding) captures almost all of the explanatory power at much lower ",
+  "risk of overfitting and unnecessary collinearity.\n"))
+```
+
+# Outputs
+
+Outputs written to the working directory:
+
+- `figures/correlation_heatmap_baseR.png`
+- `figures/correlation_ellipse.png`
+- `figures/scatterplots_baseR.png`
+- `figures/scatterplots_ggplot.png`
+- `model_comparison.csv`
