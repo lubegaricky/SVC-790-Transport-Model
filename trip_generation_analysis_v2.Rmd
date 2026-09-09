@@ -7,6 +7,8 @@ output:
     toc: true
     toc_depth: 2
     number_sections: true
+    includes:
+      in_header: preamble.tex
   html_document:
     toc: true
     toc_depth: 2
@@ -51,6 +53,19 @@ wrap_console <- function(lines, width = 78) {
   }))
 }
 
+# Keep each per-model output block (heading + table/printout) together on
+# one page in the PDF: request `n_lines` of vertical space right before the
+# block starts (via the `needspace` LaTeX package, loaded in preamble.tex);
+# if that much room is not left on the current page, LaTeX starts a new
+# page *before* the block instead of splitting it midway. This inserts one
+# standalone raw-LaTeX line (never a `\begin{}...\end{}` pair, which pandoc
+# would otherwise swallow whole -- including the markdown after it -- as an
+# opaque raw block). No-op for HTML output, where page breaks do not apply.
+needspace <- function(n_lines) {
+  if (knitr::is_latex_output()) {
+    cat(sprintf("\\needspace{%d\\baselineskip}\n\n", n_lines))
+  }
+}
 ```
 
 # Overview
@@ -221,7 +236,8 @@ ggplot2::ggsave("figures/scatterplots_ggplot.png", gg_scatter,
 ## Version A - Base R (manual auxiliary regressions)
 
 Each predictor is regressed on the other 7 using base R `lm()`, and
-`VIF = 1 / (1 - R2_aux)`. No `car` package is used for this version.
+$$VIF = \frac{1}{1 - R^2_{aux}}.$$
+No `car` package is used for this version.
 
 ```{r vif-baseR}
 vif_data <- data[complete.cases(data[, predictors]), predictors]
@@ -236,7 +252,13 @@ vif_table_baseR <- data.frame(Predictor = predictors,
                                R2_aux = round(r2_aux, 4),
                                VIF = round(1 / (1 - r2_aux), 3))
 
-knitr::kable(vif_table_baseR, row.names = FALSE,
+vif_table_baseR_display <- vif_table_baseR
+if (knitr::is_latex_output()) {
+  vif_table_baseR_display$Predictor <- gsub("_", "\\\\_", vif_table_baseR_display$Predictor)
+}
+colnames(vif_table_baseR_display) <- c("Predictor", "$R^2_{aux}$", "VIF")
+
+knitr::kable(vif_table_baseR_display, row.names = FALSE, escape = FALSE,
              caption = "Base R manual VIF")
 ```
 
@@ -290,8 +312,9 @@ page.
 
 ```{r model-summaries-baseR, echo=FALSE, results='asis'}
 for (nm in names(models)) {
-  cat("**Model", nm, ":**", deparse(formula(models[[nm]])), "\n\n")
   summary_lines <- capture.output(print(summary(models[[nm]])))
+  needspace(length(summary_lines) + 5)
+  cat("**Model", nm, ":**", deparse(formula(models[[nm]])), "\n\n")
   cat("```\n")
   cat(paste(wrap_console(summary_lines), collapse = "\n"), "\n")
   cat("```\n\n")
@@ -304,15 +327,17 @@ for (nm in names(models)) {
 ensure_pkg("broom")
 
 for (nm in names(models)) {
-  cat("**Model", nm, ":**", deparse(formula(models[[nm]])), "\n\n")
   tidy_tbl <- broom::tidy(models[[nm]])
+  needspace(nrow(tidy_tbl) + 10)
+  cat("**Model", nm, ":**", deparse(formula(models[[nm]])), "\n\n")
   tidy_tbl[ , -1] <- round(tidy_tbl[ , -1], 4)
   print(knitr::kable(tidy_tbl, row.names = FALSE))
   cat("\n")
   glance_tbl <- broom::glance(models[[nm]])[c("r.squared", "adj.r.squared",
                                                "statistic", "p.value", "nobs")]
   glance_tbl <- round(glance_tbl, 4)
-  print(knitr::kable(glance_tbl, row.names = FALSE))
+  colnames(glance_tbl) <- c("$R^2$", "$R^2_{adj}$", "statistic", "p.value", "nobs")
+  print(knitr::kable(glance_tbl, row.names = FALSE, escape = FALSE))
   cat("\n\n")
 }
 ```
@@ -348,7 +373,10 @@ comparison <- data.frame(
 
 write.csv(comparison, "model_comparison.csv", row.names = FALSE)
 
-knitr::kable(comparison[, c("Model", "R2", "Adj_R2", "n")], row.names = FALSE,
+comparison_display <- comparison[, c("Model", "R2", "Adj_R2", "n")]
+colnames(comparison_display) <- c("Model", "$R^2$", "$R^2_{adj}$", "n")
+
+knitr::kable(comparison_display, row.names = FALSE, escape = FALSE,
              caption = "Base R model comparison table (see predictor list above)")
 ```
 
@@ -367,7 +395,10 @@ comparison_broom <- purrr::map_dfr(names(models), function(nm) {
                 n = g$nobs)
 })
 
-knitr::kable(comparison_broom[, c("Model", "R2", "Adj_R2", "n")], row.names = FALSE,
+comparison_broom_display <- comparison_broom[, c("Model", "R2", "Adj_R2", "n")]
+colnames(comparison_broom_display) <- c("Model", "$R^2$", "$R^2_{adj}$", "n")
+
+knitr::kable(comparison_broom_display, row.names = FALSE, escape = FALSE,
              caption = "broom/dplyr model comparison table (see predictor list above)")
 ```
 
@@ -392,8 +423,10 @@ sig_flags <- function(m) {
 }
 
 for (nm in names(models)) {
+  flags <- sig_flags(models[[nm]])
+  needspace(nrow(flags) + 8)
   cat("**Model", nm, "**\n\n")
-  print(knitr::kable(sig_flags(models[[nm]]), row.names = FALSE))
+  print(knitr::kable(flags, row.names = FALSE))
   cat("\n\n")
 }
 ```
@@ -412,17 +445,18 @@ best_reduced <- reduced[which.max(reduced$Adj_R2), ]
 n_best_reduced_preds <- length(strsplit(best_reduced$Predictors, " \\+ ")[[1]])
 
 cat(sprintf(
-  "Model A (single predictor Nr_People_H) already explains R2 = %.3f (adj. R2 = %.3f).\n\n",
+  paste0("Model A (single predictor Nr_People_H) already explains ",
+         "$R^2$ = %.3f ($R^2_{adj}$ = %.3f).\n\n"),
   comparison$R2[comparison$Model == "A"], comparison$Adj_R2[comparison$Model == "A"]))
 
 cat(sprintf(
   paste0("Among the reduced (non-D) models, Model %s achieves the highest ",
-         "adjusted R2 (%.3f) using only %d predictor(s): %s.\n\n"),
+         "$R^2_{adj}$ (%.3f) using only %d predictor(s): %s.\n\n"),
   best_reduced$Model, best_reduced$Adj_R2, n_best_reduced_preds,
   best_reduced$Predictors))
 
 cat(sprintf(
-  paste0("Model D (all 8 predictors) reaches adj. R2 = %.3f -- a gain of just ",
+  paste0("Model D (all 8 predictors) reaches $R^2_{adj}$ = %.3f -- a gain of just ",
          "%.4f over Model %s, for %d extra predictors.\n\n"),
   comparison$Adj_R2[comparison$Model == "D"],
   comparison$Adj_R2[comparison$Model == "D"] - best_reduced$Adj_R2,
@@ -435,7 +469,7 @@ if (length(high_vif_predictors) > 0) {
     paste(high_vif_predictors, collapse = ", "),
     " (VIF > 5), which inflates standard errors and helps explain why ",
     "some coefficients in the full model D are not statistically ",
-    "significant despite the higher R2.\n\n"))
+    "significant despite the higher $R^2$.\n\n"))
 } else {
   cat(paste0(
     "Manual VIFs for all 8 predictors are below 2 (max is ", max(vif_table$VIF),
@@ -450,7 +484,7 @@ if (length(high_vif_predictors) > 0) {
 }
 
 cat(sprintf(
-  paste0("Given that Model %s recovers %.1f%% of Model D's adjusted R2 ",
+  paste0("Given that Model %s recovers %.1f%% of Model D's $R^2_{adj}$ ",
          "with %d fewer predictors, the marginal explanatory "),
   best_reduced$Model,
   100 * best_reduced$Adj_R2 / comparison$Adj_R2[comparison$Model == "D"],

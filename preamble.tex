@@ -1,0 +1,13 @@
+% Minimal \needspace{<dimen>} macro (avoids depending on the needspace
+% package): if less than <dimen> of vertical space remains on the current
+% page, force a page break here instead of splitting the content below.
+\makeatletter
+\newcommand{\needspace}[1]{%
+  \dimen0=#1\relax
+  \dimen2=\pagegoal
+  \advance\dimen2 by -\pagetotal
+  \ifdim\dimen2<\dimen0
+    \vfil\penalty-200\vfilneg
+  \fi
+}
+\makeatother

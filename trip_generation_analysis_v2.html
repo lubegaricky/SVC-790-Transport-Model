@@ -585,8 +585,9 @@ Factors (VIF)</h1>
 <h2><span class="header-section-number">4.1</span> Version A - Base R
 (manual auxiliary regressions)</h2>
 <p>Each predictor is regressed on the other 7 using base R
-<code>lm()</code>, and <code>VIF = 1 / (1 - R2_aux)</code>. No
-<code>car</code> package is used for this version.</p>
+<code>lm()</code>, and <span class="math display">\[VIF = \frac{1}{1 -
+R^2_{aux}}.\]</span> No <code>car</code> package is used for this
+version.</p>
 <pre class="r"><code>vif_data &lt;- data[complete.cases(data[, predictors]), predictors]
 
 r2_aux &lt;- sapply(predictors, function(p) {
@@ -599,14 +600,20 @@ vif_table_baseR &lt;- data.frame(Predictor = predictors,
                                R2_aux = round(r2_aux, 4),
                                VIF = round(1 / (1 - r2_aux), 3))
 
-knitr::kable(vif_table_baseR, row.names = FALSE,
+vif_table_baseR_display &lt;- vif_table_baseR
+if (knitr::is_latex_output()) {
+  vif_table_baseR_display$Predictor &lt;- gsub(&quot;_&quot;, &quot;\\\\_&quot;, vif_table_baseR_display$Predictor)
+}
+colnames(vif_table_baseR_display) &lt;- c(&quot;Predictor&quot;, &quot;$R^2_{aux}$&quot;, &quot;VIF&quot;)
+
+knitr::kable(vif_table_baseR_display, row.names = FALSE, escape = FALSE,
              caption = &quot;Base R manual VIF&quot;)</code></pre>
 <table>
 <caption>Base R manual VIF</caption>
 <thead>
 <tr class="header">
 <th align="left">Predictor</th>
-<th align="right">R2_aux</th>
+<th align="right"><span class="math inline">\(R^2_{aux}\)</span></th>
 <th align="right">VIF</th>
 </tr>
 </thead>
@@ -892,15 +899,17 @@ F-statistic:  1615 on 3 and 5378 DF,  p-value: &lt; 2.2e-16
 <pre class="r"><code>ensure_pkg(&quot;broom&quot;)
 
 for (nm in names(models)) {
-  cat(&quot;**Model&quot;, nm, &quot;:**&quot;, deparse(formula(models[[nm]])), &quot;\n\n&quot;)
   tidy_tbl &lt;- broom::tidy(models[[nm]])
+  needspace(nrow(tidy_tbl) + 10)
+  cat(&quot;**Model&quot;, nm, &quot;:**&quot;, deparse(formula(models[[nm]])), &quot;\n\n&quot;)
   tidy_tbl[ , -1] &lt;- round(tidy_tbl[ , -1], 4)
   print(knitr::kable(tidy_tbl, row.names = FALSE))
   cat(&quot;\n&quot;)
   glance_tbl &lt;- broom::glance(models[[nm]])[c(&quot;r.squared&quot;, &quot;adj.r.squared&quot;,
                                                &quot;statistic&quot;, &quot;p.value&quot;, &quot;nobs&quot;)]
   glance_tbl &lt;- round(glance_tbl, 4)
-  print(knitr::kable(glance_tbl, row.names = FALSE))
+  colnames(glance_tbl) &lt;- c(&quot;$R^2$&quot;, &quot;$R^2_{adj}$&quot;, &quot;statistic&quot;, &quot;p.value&quot;, &quot;nobs&quot;)
+  print(knitr::kable(glance_tbl, row.names = FALSE, escape = FALSE))
   cat(&quot;\n\n&quot;)
 }</code></pre>
 <p><strong>Model A :</strong> N_trips ~ Nr_People_H</p>
@@ -934,8 +943,8 @@ for (nm in names(models)) {
 <table>
 <thead>
 <tr class="header">
-<th align="right">r.squared</th>
-<th align="right">adj.r.squared</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
 <th align="right">nobs</th>
@@ -989,8 +998,8 @@ for (nm in names(models)) {
 <table>
 <thead>
 <tr class="header">
-<th align="right">r.squared</th>
-<th align="right">adj.r.squared</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
 <th align="right">nobs</th>
@@ -1052,8 +1061,8 @@ Workers_Fulltime + Driv_Lic</p>
 <table>
 <thead>
 <tr class="header">
-<th align="right">r.squared</th>
-<th align="right">adj.r.squared</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
 <th align="right">nobs</th>
@@ -1151,8 +1160,8 @@ Learners_students + Driv_Lic</p>
 <table>
 <thead>
 <tr class="header">
-<th align="right">r.squared</th>
-<th align="right">adj.r.squared</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
 <th align="right">nobs</th>
@@ -1214,8 +1223,8 @@ Learners_students + Driv_Lic</p>
 <table>
 <thead>
 <tr class="header">
-<th align="right">r.squared</th>
-<th align="right">adj.r.squared</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
 <th align="right">nobs</th>
@@ -1277,8 +1286,8 @@ Learners_students</p>
 <table>
 <thead>
 <tr class="header">
-<th align="right">r.squared</th>
-<th align="right">adj.r.squared</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">statistic</th>
 <th align="right">p.value</th>
 <th align="right">nobs</th>
@@ -1330,7 +1339,10 @@ comparison table</h2>
 
 write.csv(comparison, &quot;model_comparison.csv&quot;, row.names = FALSE)
 
-knitr::kable(comparison[, c(&quot;Model&quot;, &quot;R2&quot;, &quot;Adj_R2&quot;, &quot;n&quot;)], row.names = FALSE,
+comparison_display &lt;- comparison[, c(&quot;Model&quot;, &quot;R2&quot;, &quot;Adj_R2&quot;, &quot;n&quot;)]
+colnames(comparison_display) &lt;- c(&quot;Model&quot;, &quot;$R^2$&quot;, &quot;$R^2_{adj}$&quot;, &quot;n&quot;)
+
+knitr::kable(comparison_display, row.names = FALSE, escape = FALSE,
              caption = &quot;Base R model comparison table (see predictor list above)&quot;)</code></pre>
 <table>
 <caption>Base R model comparison table (see predictor list
@@ -1338,8 +1350,8 @@ above)</caption>
 <thead>
 <tr class="header">
 <th align="left">Model</th>
-<th align="right">R2</th>
-<th align="right">Adj_R2</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">n</th>
 </tr>
 </thead>
@@ -1398,7 +1410,10 @@ comparison_broom &lt;- purrr::map_dfr(names(models), function(nm) {
                 n = g$nobs)
 })
 
-knitr::kable(comparison_broom[, c(&quot;Model&quot;, &quot;R2&quot;, &quot;Adj_R2&quot;, &quot;n&quot;)], row.names = FALSE,
+comparison_broom_display &lt;- comparison_broom[, c(&quot;Model&quot;, &quot;R2&quot;, &quot;Adj_R2&quot;, &quot;n&quot;)]
+colnames(comparison_broom_display) &lt;- c(&quot;Model&quot;, &quot;$R^2$&quot;, &quot;$R^2_{adj}$&quot;, &quot;n&quot;)
+
+knitr::kable(comparison_broom_display, row.names = FALSE, escape = FALSE,
              caption = &quot;broom/dplyr model comparison table (see predictor list above)&quot;)</code></pre>
 <table>
 <caption>broom/dplyr model comparison table (see predictor list
@@ -1406,8 +1421,8 @@ above)</caption>
 <thead>
 <tr class="header">
 <th align="left">Model</th>
-<th align="right">R2</th>
-<th align="right">Adj_R2</th>
+<th align="right"><span class="math inline">\(R^2\)</span></th>
+<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
 <th align="right">n</th>
 </tr>
 </thead>
@@ -1465,8 +1480,10 @@ significance</h3>
 }
 
 for (nm in names(models)) {
+  flags &lt;- sig_flags(models[[nm]])
+  needspace(nrow(flags) + 8)
   cat(&quot;**Model&quot;, nm, &quot;**\n\n&quot;)
-  print(knitr::kable(sig_flags(models[[nm]]), row.names = FALSE))
+  print(knitr::kable(flags, row.names = FALSE))
   cat(&quot;\n\n&quot;)
 }</code></pre>
 <p><strong>Model A </strong></p>
@@ -1674,13 +1691,11 @@ commentary</h3>
 <p>The commentary below is computed directly from the fitted results
 above (not hard-coded), so it stays accurate if the underlying data
 changes.</p>
-<p>Model A (single predictor Nr_People_H) already explains R2 = 0.196
-(adj. R2 = 0.196).</p>
-<p>Among the reduced (non-D) models, Model F achieves the highest
-adjusted R2 (0.474) using only 3 predictor(s): Nr_People_H +
-Workers_Fulltime + Learners_students.</p>
-<p>Model D (all 8 predictors) reaches adj. R2 = 0.477 – a gain of just
-0.0036 over Model F, for 5 extra predictors.</p>
+<p>Model A (single predictor Nr_People_H) already explains <span class="math inline">\(R^2\)</span> = 0.196 (<span class="math inline">\(R^2_{adj}\)</span> = 0.196).</p>
+<p>Among the reduced (non-D) models, Model F achieves the highest <span class="math inline">\(R^2_{adj}\)</span> (0.474) using only 3
+predictor(s): Nr_People_H + Workers_Fulltime + Learners_students.</p>
+<p>Model D (all 8 predictors) reaches <span class="math inline">\(R^2_{adj}\)</span> = 0.477 – a gain of just 0.0036
+over Model F, for 5 extra predictors.</p>
 <p>Manual VIFs for all 8 predictors are below 2 (max is 1.612), so
 multicollinearity is not severe enough on its own to destabilise Model
 D’s coefficients – all 8 coefficients in Model D remain statistically
@@ -1690,13 +1705,12 @@ Educ_Tertiary-Driv_Lic, Educ_Tertiary-Workers_Fulltime), so part of what
 they add in Model D duplicates explanatory power already captured by the
 core predictors (Nr_People_H, Learners_students, Workers_Fulltime,
 Driv_Lic).</p>
-<p>Given that Model F recovers 99.2% of Model D’s adjusted R2 with 5
-fewer predictors, the marginal explanatory gain from fitting the full
-8-predictor Model D does not appear to be worth its loss of parsimony: a
-small, well-chosen predictor set (household size, learners/students,
-workers, driver’s licence holding) captures almost all of the
-explanatory power at much lower risk of overfitting and unnecessary
-collinearity.</p>
+<p>Given that Model F recovers 99.2% of Model D’s <span class="math inline">\(R^2_{adj}\)</span> with 5 fewer predictors, the
+marginal explanatory gain from fitting the full 8-predictor Model D does
+not appear to be worth its loss of parsimony: a small, well-chosen
+predictor set (household size, learners/students, workers, driver’s
+licence holding) captures almost all of the explanatory power at much
+lower risk of overfitting and unnecessary collinearity.</p>
 </div>
 </div>
 </div>
