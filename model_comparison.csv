@@ -1,0 +1,7 @@
+"Model","Predictors","R2","Adj_R2","n"
+"A","Nr_People_H",0.1962,0.196,5382
+"B","Nr_People_H + Driv_Lic",0.2067,0.2064,5382
+"C","Learners_students + Workers_Fulltime + Driv_Lic",0.4141,0.4138,5387
+"D","Nr_People_H + Elderly + Educ_HS + Educ_Tertiary + Workers_Fulltime + Workers_Parttime + Learners_students + Driv_Lic",0.4781,0.4773,5316
+"E","Nr_People_H + Learners_students + Driv_Lic",0.4499,0.4496,5382
+"F","Nr_People_H + Workers_Fulltime + Learners_students",0.474,0.4737,5382
