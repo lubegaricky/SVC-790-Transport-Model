@@ -25,9 +25,17 @@ options(width = 80)
 hook_output <- knitr::knit_hooks$get("output")
 knitr::knit_hooks$set(output = function(x, options) {
   if (!is.null(n <- options$linewidth)) {
-    x <- strsplit(x, "\n")[[1]]
-    x <- ifelse(nchar(x) > n, strwrap(x, width = n), x)
-    x <- paste(unlist(x), collapse = "\n")
+    # Wrap each line individually -- NOT `ifelse(nchar(x) > n,
+    # strwrap(x, width = n), x)` on the whole vector at once: strwrap()
+    # reflows a multi-line vector into a *different-length* result, so
+    # ifelse's recycling silently scrambles the output whenever any line
+    # is long (this corrupted raw kable()/LaTeX table output, which has
+    # long lines, while ordinary short console text never triggered it).
+    lines <- strsplit(x, "\n")[[1]]
+    lines <- unlist(lapply(lines, function(l) {
+      if (nchar(l) > n) strwrap(l, width = n) else l
+    }))
+    x <- paste(lines, collapse = "\n")
     if (!grepl("\n$", x)) x <- paste0(x, "\n")
   }
   hook_output(x, options)
@@ -64,6 +72,23 @@ wrap_console <- function(lines, width = 78) {
 needspace <- function(n_lines) {
   if (knitr::is_latex_output()) {
     cat(sprintf("\\needspace{%d\\baselineskip}\n\n", n_lines))
+  }
+}
+
+# knitr::kable() with no explicit `format` is re-typeset by *pandoc* (not
+# kable) as a multi-page-capable `longtable` when the output is PDF. That
+# is fine on its own, but a `longtable`'s page-break bookkeeping needs
+# several stable compilation passes -- and a `\needspace`-forced break
+# sitting right before/between a run of them (as in the six-model loops
+# below) corrupts that bookkeeping, silently dropping whole rows or model
+# blocks. Forcing plain `tabular` (format="latex") sidesteps this: it is
+# one atomic, unbreakable box, so it is both immune to that corruption and
+# a better match for "never split a model's table across a page" anyway.
+kable_safe <- function(x, ...) {
+  if (knitr::is_latex_output()) {
+    knitr::kable(x, format = "latex", booktabs = TRUE, ...)
+  } else {
+    knitr::kable(x, format = "html", ...)
   }
 }
 ```
@@ -258,7 +283,7 @@ if (knitr::is_latex_output()) {
 }
 colnames(vif_table_baseR_display) <- c("Predictor", "$R^2_{aux}$", "VIF")
 
-knitr::kable(vif_table_baseR_display, row.names = FALSE, escape = FALSE,
+kable_safe(vif_table_baseR_display, row.names = FALSE, escape = FALSE,
              caption = "Base R manual VIF")
 ```
 
@@ -275,7 +300,7 @@ vif_full_model <- lm(full_formula, data = data)
 vif_table_car <- data.frame(Predictor = names(car::vif(vif_full_model)),
                              VIF = round(car::vif(vif_full_model), 3))
 
-knitr::kable(vif_table_car, row.names = FALSE,
+kable_safe(vif_table_car, row.names = FALSE,
              caption = "car::vif() result")
 ```
 
@@ -331,13 +356,13 @@ for (nm in names(models)) {
   needspace(nrow(tidy_tbl) + 10)
   cat("**Model", nm, ":**", deparse(formula(models[[nm]])), "\n\n")
   tidy_tbl[ , -1] <- round(tidy_tbl[ , -1], 4)
-  print(knitr::kable(tidy_tbl, row.names = FALSE))
+  print(kable_safe(tidy_tbl, row.names = FALSE))
   cat("\n")
   glance_tbl <- broom::glance(models[[nm]])[c("r.squared", "adj.r.squared",
                                                "statistic", "p.value", "nobs")]
   glance_tbl <- round(glance_tbl, 4)
   colnames(glance_tbl) <- c("$R^2$", "$R^2_{adj}$", "statistic", "p.value", "nobs")
-  print(knitr::kable(glance_tbl, row.names = FALSE, escape = FALSE))
+  print(kable_safe(glance_tbl, row.names = FALSE, escape = FALSE))
   cat("\n\n")
 }
 ```
@@ -376,7 +401,7 @@ write.csv(comparison, "model_comparison.csv", row.names = FALSE)
 comparison_display <- comparison[, c("Model", "R2", "Adj_R2", "n")]
 colnames(comparison_display) <- c("Model", "$R^2$", "$R^2_{adj}$", "n")
 
-knitr::kable(comparison_display, row.names = FALSE, escape = FALSE,
+kable_safe(comparison_display, row.names = FALSE, escape = FALSE,
              caption = "Base R model comparison table (see predictor list above)")
 ```
 
@@ -398,7 +423,7 @@ comparison_broom <- purrr::map_dfr(names(models), function(nm) {
 comparison_broom_display <- comparison_broom[, c("Model", "R2", "Adj_R2", "n")]
 colnames(comparison_broom_display) <- c("Model", "$R^2$", "$R^2_{adj}$", "n")
 
-knitr::kable(comparison_broom_display, row.names = FALSE, escape = FALSE,
+kable_safe(comparison_broom_display, row.names = FALSE, escape = FALSE,
              caption = "broom/dplyr model comparison table (see predictor list above)")
 ```
 
@@ -426,7 +451,7 @@ for (nm in names(models)) {
   flags <- sig_flags(models[[nm]])
   needspace(nrow(flags) + 8)
   cat("**Model", nm, "**\n\n")
-  print(knitr::kable(flags, row.names = FALSE))
+  print(kable_safe(flags, row.names = FALSE))
   cat("\n\n")
 }
 ```

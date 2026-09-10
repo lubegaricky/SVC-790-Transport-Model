@@ -11,7 +11,7 @@
 
 <meta name="author" content="R. Lubega" />
 
-<meta name="date" content="2026-09-09" />
+<meta name="date" content="2026-09-10" />
 
 <title>Trip Generation Analysis - SVC790 Part A</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Trip Generation Analysis - SVC790 Part
 A</h1>
 <h4 class="author">R. Lubega</h4>
-<h4 class="date">2026-09-09</h4>
+<h4 class="date">2026-09-10</h4>
 
 </div>
 
@@ -606,57 +606,113 @@ if (knitr::is_latex_output()) {
 }
 colnames(vif_table_baseR_display) &lt;- c(&quot;Predictor&quot;, &quot;$R^2_{aux}$&quot;, &quot;VIF&quot;)
 
-knitr::kable(vif_table_baseR_display, row.names = FALSE, escape = FALSE,
+kable_safe(vif_table_baseR_display, row.names = FALSE, escape = FALSE,
              caption = &quot;Base R manual VIF&quot;)</code></pre>
 <table>
-<caption>Base R manual VIF</caption>
+<caption>
+Base R manual VIF
+</caption>
 <thead>
-<tr class="header">
-<th align="left">Predictor</th>
-<th align="right"><span class="math inline">\(R^2_{aux}\)</span></th>
-<th align="right">VIF</th>
+<tr>
+<th style="text-align:left;">
+Predictor
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{aux}\)</span>
+</th>
+<th style="text-align:right;">
+VIF
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Nr_People_H</td>
-<td align="right">0.3795</td>
-<td align="right">1.612</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+0.3795
+</td>
+<td style="text-align:right;">
+1.612
+</td>
 </tr>
-<tr class="even">
-<td align="left">Elderly</td>
-<td align="right">0.3253</td>
-<td align="right">1.482</td>
+<tr>
+<td style="text-align:left;">
+Elderly
+</td>
+<td style="text-align:right;">
+0.3253
+</td>
+<td style="text-align:right;">
+1.482
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Educ_HS</td>
-<td align="right">0.2473</td>
-<td align="right">1.329</td>
+<tr>
+<td style="text-align:left;">
+Educ_HS
+</td>
+<td style="text-align:right;">
+0.2473
+</td>
+<td style="text-align:right;">
+1.329
+</td>
 </tr>
-<tr class="even">
-<td align="left">Educ_Tertiary</td>
-<td align="right">0.3363</td>
-<td align="right">1.507</td>
+<tr>
+<td style="text-align:left;">
+Educ_Tertiary
+</td>
+<td style="text-align:right;">
+0.3363
+</td>
+<td style="text-align:right;">
+1.507
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Workers_Fulltime</td>
-<td align="right">0.3151</td>
-<td align="right">1.460</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+0.3151
+</td>
+<td style="text-align:right;">
+1.460
+</td>
 </tr>
-<tr class="even">
-<td align="left">Workers_Parttime</td>
-<td align="right">0.0407</td>
-<td align="right">1.042</td>
+<tr>
+<td style="text-align:left;">
+Workers_Parttime
+</td>
+<td style="text-align:right;">
+0.0407
+</td>
+<td style="text-align:right;">
+1.042
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Learners_students</td>
-<td align="right">0.0829</td>
-<td align="right">1.090</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+0.0829
+</td>
+<td style="text-align:right;">
+1.090
+</td>
 </tr>
-<tr class="even">
-<td align="left">Driv_Lic</td>
-<td align="right">0.2286</td>
-<td align="right">1.296</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+0.2286
+</td>
+<td style="text-align:right;">
+1.296
+</td>
 </tr>
 </tbody>
 </table>
@@ -674,48 +730,86 @@ vif_full_model &lt;- lm(full_formula, data = data)
 vif_table_car &lt;- data.frame(Predictor = names(car::vif(vif_full_model)),
                              VIF = round(car::vif(vif_full_model), 3))
 
-knitr::kable(vif_table_car, row.names = FALSE,
+kable_safe(vif_table_car, row.names = FALSE,
              caption = &quot;car::vif() result&quot;)</code></pre>
 <table>
-<caption>car::vif() result</caption>
+<caption>
+car::vif() result
+</caption>
 <thead>
-<tr class="header">
-<th align="left">Predictor</th>
-<th align="right">VIF</th>
+<tr>
+<th style="text-align:left;">
+Predictor
+</th>
+<th style="text-align:right;">
+VIF
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Nr_People_H</td>
-<td align="right">1.612</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+1.612
+</td>
 </tr>
-<tr class="even">
-<td align="left">Elderly</td>
-<td align="right">1.482</td>
+<tr>
+<td style="text-align:left;">
+Elderly
+</td>
+<td style="text-align:right;">
+1.482
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Educ_HS</td>
-<td align="right">1.329</td>
+<tr>
+<td style="text-align:left;">
+Educ_HS
+</td>
+<td style="text-align:right;">
+1.329
+</td>
 </tr>
-<tr class="even">
-<td align="left">Educ_Tertiary</td>
-<td align="right">1.507</td>
+<tr>
+<td style="text-align:left;">
+Educ_Tertiary
+</td>
+<td style="text-align:right;">
+1.507
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Workers_Fulltime</td>
-<td align="right">1.460</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+1.460
+</td>
 </tr>
-<tr class="even">
-<td align="left">Workers_Parttime</td>
-<td align="right">1.042</td>
+<tr>
+<td style="text-align:left;">
+Workers_Parttime
+</td>
+<td style="text-align:right;">
+1.042
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Learners_students</td>
-<td align="right">1.090</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+1.090
+</td>
 </tr>
-<tr class="even">
-<td align="left">Driv_Lic</td>
-<td align="right">1.296</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+1.296
+</td>
 </tr>
 </tbody>
 </table>
@@ -903,115 +997,225 @@ for (nm in names(models)) {
   needspace(nrow(tidy_tbl) + 10)
   cat(&quot;**Model&quot;, nm, &quot;:**&quot;, deparse(formula(models[[nm]])), &quot;\n\n&quot;)
   tidy_tbl[ , -1] &lt;- round(tidy_tbl[ , -1], 4)
-  print(knitr::kable(tidy_tbl, row.names = FALSE))
+  print(kable_safe(tidy_tbl, row.names = FALSE))
   cat(&quot;\n&quot;)
   glance_tbl &lt;- broom::glance(models[[nm]])[c(&quot;r.squared&quot;, &quot;adj.r.squared&quot;,
                                                &quot;statistic&quot;, &quot;p.value&quot;, &quot;nobs&quot;)]
   glance_tbl &lt;- round(glance_tbl, 4)
   colnames(glance_tbl) &lt;- c(&quot;$R^2$&quot;, &quot;$R^2_{adj}$&quot;, &quot;statistic&quot;, &quot;p.value&quot;, &quot;nobs&quot;)
-  print(knitr::kable(glance_tbl, row.names = FALSE, escape = FALSE))
+  print(kable_safe(glance_tbl, row.names = FALSE, escape = FALSE))
   cat(&quot;\n\n&quot;)
 }</code></pre>
 <p><strong>Model A :</strong> N_trips ~ Nr_People_H</p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.7810</td>
-<td align="right">0.0200</td>
-<td align="right">39.1219</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.7810
+</td>
+<td style="text-align:right;">
+0.0200
+</td>
+<td style="text-align:right;">
+39.1219
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Nr_People_H</td>
-<td align="right">0.2593</td>
-<td align="right">0.0072</td>
-<td align="right">36.2368</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+0.2593
+</td>
+<td style="text-align:right;">
+0.0072
+</td>
+<td style="text-align:right;">
+36.2368
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
-<tr class="header">
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">nobs</th>
+<tr>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+nobs
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="right">0.1962</td>
-<td align="right">0.196</td>
-<td align="right">1313.108</td>
-<td align="right">0</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:right;">
+0.1962
+</td>
+<td style="text-align:right;">
+0.196
+</td>
+<td style="text-align:right;">
+1313.108
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Model B :</strong> N_trips ~ Nr_People_H + Driv_Lic</p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.7138</td>
-<td align="right">0.0214</td>
-<td align="right">33.4026</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.7138
+</td>
+<td style="text-align:right;">
+0.0214
+</td>
+<td style="text-align:right;">
+33.4026
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Nr_People_H</td>
-<td align="right">0.2578</td>
-<td align="right">0.0071</td>
-<td align="right">36.2469</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+0.2578
+</td>
+<td style="text-align:right;">
+0.0071
+</td>
+<td style="text-align:right;">
+36.2469
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Driv_Lic</td>
-<td align="right">0.1326</td>
-<td align="right">0.0157</td>
-<td align="right">8.4395</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+0.1326
+</td>
+<td style="text-align:right;">
+0.0157
+</td>
+<td style="text-align:right;">
+8.4395
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
-<tr class="header">
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">nobs</th>
+<tr>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+nobs
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="right">0.2067</td>
-<td align="right">0.2064</td>
-<td align="right">700.7369</td>
-<td align="right">0</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:right;">
+0.2067
+</td>
+<td style="text-align:right;">
+0.2064
+</td>
+<td style="text-align:right;">
+700.7369
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
 </tbody>
 </table>
@@ -1019,62 +1223,132 @@ for (nm in names(models)) {
 Workers_Fulltime + Driv_Lic</p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">1.1098</td>
-<td align="right">0.0121</td>
-<td align="right">91.4284</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+1.1098
+</td>
+<td style="text-align:right;">
+0.0121
+</td>
+<td style="text-align:right;">
+91.4284
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Learners_students</td>
-<td align="right">1.2051</td>
-<td align="right">0.0211</td>
-<td align="right">57.1224</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+1.2051
+</td>
+<td style="text-align:right;">
+0.0211
+</td>
+<td style="text-align:right;">
+57.1224
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Workers_Fulltime</td>
-<td align="right">0.2804</td>
-<td align="right">0.0147</td>
-<td align="right">19.0127</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+0.2804
+</td>
+<td style="text-align:right;">
+0.0147
+</td>
+<td style="text-align:right;">
+19.0127
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Driv_Lic</td>
-<td align="right">0.0902</td>
-<td align="right">0.0148</td>
-<td align="right">6.0951</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+0.0902
+</td>
+<td style="text-align:right;">
+0.0148
+</td>
+<td style="text-align:right;">
+6.0951
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
-<tr class="header">
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">nobs</th>
+<tr>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+nobs
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="right">0.4141</td>
-<td align="right">0.4138</td>
-<td align="right">1268.247</td>
-<td align="right">0</td>
-<td align="right">5387</td>
+<tr>
+<td style="text-align:right;">
+0.4141
+</td>
+<td style="text-align:right;">
+0.4138
+</td>
+<td style="text-align:right;">
+1268.247
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5387
+</td>
 </tr>
 </tbody>
 </table>
@@ -1083,97 +1357,217 @@ Workers_Fulltime + Driv_Lic</p>
 Learners_students + Driv_Lic</p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.7061</td>
-<td align="right">0.0168</td>
-<td align="right">42.0480</td>
-<td align="right">0.0000</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.7061
+</td>
+<td style="text-align:right;">
+0.0168
+</td>
+<td style="text-align:right;">
+42.0480
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
 </tr>
-<tr class="even">
-<td align="left">Nr_People_H</td>
-<td align="right">0.1298</td>
-<td align="right">0.0067</td>
-<td align="right">19.4641</td>
-<td align="right">0.0000</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+0.1298
+</td>
+<td style="text-align:right;">
+0.0067
+</td>
+<td style="text-align:right;">
+19.4641
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Elderly</td>
-<td align="right">-0.0215</td>
-<td align="right">0.0090</td>
-<td align="right">-2.3972</td>
-<td align="right">0.0166</td>
+<tr>
+<td style="text-align:left;">
+Elderly
+</td>
+<td style="text-align:right;">
+-0.0215
+</td>
+<td style="text-align:right;">
+0.0090
+</td>
+<td style="text-align:right;">
+-2.3972
+</td>
+<td style="text-align:right;">
+0.0166
+</td>
 </tr>
-<tr class="even">
-<td align="left">Educ_HS</td>
-<td align="right">0.2333</td>
-<td align="right">0.0128</td>
-<td align="right">18.2600</td>
-<td align="right">0.0000</td>
+<tr>
+<td style="text-align:left;">
+Educ_HS
+</td>
+<td style="text-align:right;">
+0.2333
+</td>
+<td style="text-align:right;">
+0.0128
+</td>
+<td style="text-align:right;">
+18.2600
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Educ_Tertiary</td>
-<td align="right">0.1874</td>
-<td align="right">0.0181</td>
-<td align="right">10.3653</td>
-<td align="right">0.0000</td>
+<tr>
+<td style="text-align:left;">
+Educ_Tertiary
+</td>
+<td style="text-align:right;">
+0.1874
+</td>
+<td style="text-align:right;">
+0.0181
+</td>
+<td style="text-align:right;">
+10.3653
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
 </tr>
-<tr class="even">
-<td align="left">Workers_Fulltime</td>
-<td align="right">0.1449</td>
-<td align="right">0.0141</td>
-<td align="right">10.2822</td>
-<td align="right">0.0000</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+0.1449
+</td>
+<td style="text-align:right;">
+0.0141
+</td>
+<td style="text-align:right;">
+10.2822
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Workers_Parttime</td>
-<td align="right">0.3362</td>
-<td align="right">0.0240</td>
-<td align="right">13.9815</td>
-<td align="right">0.0000</td>
+<tr>
+<td style="text-align:left;">
+Workers_Parttime
+</td>
+<td style="text-align:right;">
+0.3362
+</td>
+<td style="text-align:right;">
+0.0240
+</td>
+<td style="text-align:right;">
+13.9815
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
 </tr>
-<tr class="even">
-<td align="left">Learners_students</td>
-<td align="right">0.9843</td>
-<td align="right">0.0209</td>
-<td align="right">47.0492</td>
-<td align="right">0.0000</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+0.9843
+</td>
+<td style="text-align:right;">
+0.0209
+</td>
+<td style="text-align:right;">
+47.0492
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Driv_Lic</td>
-<td align="right">0.0407</td>
-<td align="right">0.0132</td>
-<td align="right">3.0911</td>
-<td align="right">0.0020</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+0.0407
+</td>
+<td style="text-align:right;">
+0.0132
+</td>
+<td style="text-align:right;">
+3.0911
+</td>
+<td style="text-align:right;">
+0.0020
+</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
-<tr class="header">
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">nobs</th>
+<tr>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+nobs
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="right">0.4781</td>
-<td align="right">0.4773</td>
-<td align="right">607.7632</td>
-<td align="right">0</td>
-<td align="right">5316</td>
+<tr>
+<td style="text-align:right;">
+0.4781
+</td>
+<td style="text-align:right;">
+0.4773
+</td>
+<td style="text-align:right;">
+607.7632
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5316
+</td>
 </tr>
 </tbody>
 </table>
@@ -1181,62 +1575,132 @@ Learners_students + Driv_Lic</p>
 + Driv_Lic</p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.8186</td>
-<td align="right">0.0179</td>
-<td align="right">45.6624</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.8186
+</td>
+<td style="text-align:right;">
+0.0179
+</td>
+<td style="text-align:right;">
+45.6624
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Nr_People_H</td>
-<td align="right">0.1628</td>
-<td align="right">0.0062</td>
-<td align="right">26.1003</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+0.1628
+</td>
+<td style="text-align:right;">
+0.0062
+</td>
+<td style="text-align:right;">
+26.1003
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Learners_students</td>
-<td align="right">1.0404</td>
-<td align="right">0.0213</td>
-<td align="right">48.7583</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+1.0404
+</td>
+<td style="text-align:right;">
+0.0213
+</td>
+<td style="text-align:right;">
+48.7583
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Driv_Lic</td>
-<td align="right">0.1803</td>
-<td align="right">0.0131</td>
-<td align="right">13.7411</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+0.1803
+</td>
+<td style="text-align:right;">
+0.0131
+</td>
+<td style="text-align:right;">
+13.7411
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
-<tr class="header">
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">nobs</th>
+<tr>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+nobs
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="right">0.4499</td>
-<td align="right">0.4496</td>
-<td align="right">1465.998</td>
-<td align="right">0</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:right;">
+0.4499
+</td>
+<td style="text-align:right;">
+0.4496
+</td>
+<td style="text-align:right;">
+1465.998
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
 </tbody>
 </table>
@@ -1244,62 +1708,132 @@ Learners_students + Driv_Lic</p>
 Learners_students</p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.8114</td>
-<td align="right">0.0170</td>
-<td align="right">47.7995</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.8114
+</td>
+<td style="text-align:right;">
+0.0170
+</td>
+<td style="text-align:right;">
+47.7995
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Nr_People_H</td>
-<td align="right">0.1485</td>
-<td align="right">0.0062</td>
-<td align="right">24.1355</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+0.1485
+</td>
+<td style="text-align:right;">
+0.0062
+</td>
+<td style="text-align:right;">
+24.1355
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Workers_Fulltime</td>
-<td align="right">0.2717</td>
-<td align="right">0.0129</td>
-<td align="right">21.0755</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+0.2717
+</td>
+<td style="text-align:right;">
+0.0129
+</td>
+<td style="text-align:right;">
+21.0755
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
-<tr class="even">
-<td align="left">Learners_students</td>
-<td align="right">1.0365</td>
-<td align="right">0.0208</td>
-<td align="right">49.7738</td>
-<td align="right">0</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+1.0365
+</td>
+<td style="text-align:right;">
+0.0208
+</td>
+<td style="text-align:right;">
+49.7738
+</td>
+<td style="text-align:right;">
+0
+</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
-<tr class="header">
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">nobs</th>
+<tr>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+nobs
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="right">0.474</td>
-<td align="right">0.4737</td>
-<td align="right">1615.479</td>
-<td align="right">0</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:right;">
+0.474
+</td>
+<td style="text-align:right;">
+0.4737
+</td>
+<td style="text-align:right;">
+1615.479
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
 </tbody>
 </table>
@@ -1342,55 +1876,112 @@ write.csv(comparison, &quot;model_comparison.csv&quot;, row.names = FALSE)
 comparison_display &lt;- comparison[, c(&quot;Model&quot;, &quot;R2&quot;, &quot;Adj_R2&quot;, &quot;n&quot;)]
 colnames(comparison_display) &lt;- c(&quot;Model&quot;, &quot;$R^2$&quot;, &quot;$R^2_{adj}$&quot;, &quot;n&quot;)
 
-knitr::kable(comparison_display, row.names = FALSE, escape = FALSE,
+kable_safe(comparison_display, row.names = FALSE, escape = FALSE,
              caption = &quot;Base R model comparison table (see predictor list above)&quot;)</code></pre>
 <table>
-<caption>Base R model comparison table (see predictor list
-above)</caption>
+<caption>
+Base R model comparison table (see predictor list above)
+</caption>
 <thead>
-<tr class="header">
-<th align="left">Model</th>
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">n</th>
+<tr>
+<th style="text-align:left;">
+Model
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+n
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">A</td>
-<td align="right">0.1962</td>
-<td align="right">0.1960</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0.1962
+</td>
+<td style="text-align:right;">
+0.1960
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
-<tr class="even">
-<td align="left">B</td>
-<td align="right">0.2067</td>
-<td align="right">0.2064</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+0.2067
+</td>
+<td style="text-align:right;">
+0.2064
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
-<tr class="odd">
-<td align="left">C</td>
-<td align="right">0.4141</td>
-<td align="right">0.4138</td>
-<td align="right">5387</td>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+0.4141
+</td>
+<td style="text-align:right;">
+0.4138
+</td>
+<td style="text-align:right;">
+5387
+</td>
 </tr>
-<tr class="even">
-<td align="left">D</td>
-<td align="right">0.4781</td>
-<td align="right">0.4773</td>
-<td align="right">5316</td>
+<tr>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+0.4781
+</td>
+<td style="text-align:right;">
+0.4773
+</td>
+<td style="text-align:right;">
+5316
+</td>
 </tr>
-<tr class="odd">
-<td align="left">E</td>
-<td align="right">0.4499</td>
-<td align="right">0.4496</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+E
+</td>
+<td style="text-align:right;">
+0.4499
+</td>
+<td style="text-align:right;">
+0.4496
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
-<tr class="even">
-<td align="left">F</td>
-<td align="right">0.4740</td>
-<td align="right">0.4737</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+0.4740
+</td>
+<td style="text-align:right;">
+0.4737
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
 </tbody>
 </table>
@@ -1413,55 +2004,112 @@ comparison_broom &lt;- purrr::map_dfr(names(models), function(nm) {
 comparison_broom_display &lt;- comparison_broom[, c(&quot;Model&quot;, &quot;R2&quot;, &quot;Adj_R2&quot;, &quot;n&quot;)]
 colnames(comparison_broom_display) &lt;- c(&quot;Model&quot;, &quot;$R^2$&quot;, &quot;$R^2_{adj}$&quot;, &quot;n&quot;)
 
-knitr::kable(comparison_broom_display, row.names = FALSE, escape = FALSE,
+kable_safe(comparison_broom_display, row.names = FALSE, escape = FALSE,
              caption = &quot;broom/dplyr model comparison table (see predictor list above)&quot;)</code></pre>
 <table>
-<caption>broom/dplyr model comparison table (see predictor list
-above)</caption>
+<caption>
+broom/dplyr model comparison table (see predictor list above)
+</caption>
 <thead>
-<tr class="header">
-<th align="left">Model</th>
-<th align="right"><span class="math inline">\(R^2\)</span></th>
-<th align="right"><span class="math inline">\(R^2_{adj}\)</span></th>
-<th align="right">n</th>
+<tr>
+<th style="text-align:left;">
+Model
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(R^2_{adj}\)</span>
+</th>
+<th style="text-align:right;">
+n
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">A</td>
-<td align="right">0.1962</td>
-<td align="right">0.1960</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0.1962
+</td>
+<td style="text-align:right;">
+0.1960
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
-<tr class="even">
-<td align="left">B</td>
-<td align="right">0.2067</td>
-<td align="right">0.2064</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+0.2067
+</td>
+<td style="text-align:right;">
+0.2064
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
-<tr class="odd">
-<td align="left">C</td>
-<td align="right">0.4141</td>
-<td align="right">0.4138</td>
-<td align="right">5387</td>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+0.4141
+</td>
+<td style="text-align:right;">
+0.4138
+</td>
+<td style="text-align:right;">
+5387
+</td>
 </tr>
-<tr class="even">
-<td align="left">D</td>
-<td align="right">0.4781</td>
-<td align="right">0.4773</td>
-<td align="right">5316</td>
+<tr>
+<td style="text-align:left;">
+D
+</td>
+<td style="text-align:right;">
+0.4781
+</td>
+<td style="text-align:right;">
+0.4773
+</td>
+<td style="text-align:right;">
+5316
+</td>
 </tr>
-<tr class="odd">
-<td align="left">E</td>
-<td align="right">0.4499</td>
-<td align="right">0.4496</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+E
+</td>
+<td style="text-align:right;">
+0.4499
+</td>
+<td style="text-align:right;">
+0.4496
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
-<tr class="even">
-<td align="left">F</td>
-<td align="right">0.4740</td>
-<td align="right">0.4737</td>
-<td align="right">5382</td>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+0.4740
+</td>
+<td style="text-align:right;">
+0.4737
+</td>
+<td style="text-align:right;">
+5382
+</td>
 </tr>
 </tbody>
 </table>
@@ -1483,204 +2131,412 @@ for (nm in names(models)) {
   flags &lt;- sig_flags(models[[nm]])
   needspace(nrow(flags) + 8)
   cat(&quot;**Model&quot;, nm, &quot;**\n\n&quot;)
-  print(knitr::kable(flags, row.names = FALSE))
+  print(kable_safe(flags, row.names = FALSE))
   cat(&quot;\n\n&quot;)
 }</code></pre>
 <p><strong>Model A </strong></p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">t</th>
-<th align="right">p</th>
-<th align="left">sig</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+t
+</th>
+<th style="text-align:right;">
+p
+</th>
+<th style="text-align:left;">
+sig
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Nr_People_H</td>
-<td align="right">36.24</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+36.24
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Model B </strong></p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">t</th>
-<th align="right">p</th>
-<th align="left">sig</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+t
+</th>
+<th style="text-align:right;">
+p
+</th>
+<th style="text-align:left;">
+sig
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Nr_People_H</td>
-<td align="right">36.25</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+36.25
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Driv_Lic</td>
-<td align="right">8.44</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+8.44
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Model C </strong></p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">t</th>
-<th align="right">p</th>
-<th align="left">sig</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+t
+</th>
+<th style="text-align:right;">
+p
+</th>
+<th style="text-align:left;">
+sig
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Learners_students</td>
-<td align="right">57.12</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+57.12
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Workers_Fulltime</td>
-<td align="right">19.01</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+19.01
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Driv_Lic</td>
-<td align="right">6.10</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+6.10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Model D </strong></p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">t</th>
-<th align="right">p</th>
-<th align="left">sig</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+t
+</th>
+<th style="text-align:right;">
+p
+</th>
+<th style="text-align:left;">
+sig
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Nr_People_H</td>
-<td align="right">19.46</td>
-<td align="right">0.0000</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+19.46
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Elderly</td>
-<td align="right">-2.40</td>
-<td align="right">0.0166</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Elderly
+</td>
+<td style="text-align:right;">
+-2.40
+</td>
+<td style="text-align:right;">
+0.0166
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Educ_HS</td>
-<td align="right">18.26</td>
-<td align="right">0.0000</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Educ_HS
+</td>
+<td style="text-align:right;">
+18.26
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Educ_Tertiary</td>
-<td align="right">10.37</td>
-<td align="right">0.0000</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Educ_Tertiary
+</td>
+<td style="text-align:right;">
+10.37
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Workers_Fulltime</td>
-<td align="right">10.28</td>
-<td align="right">0.0000</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+10.28
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Workers_Parttime</td>
-<td align="right">13.98</td>
-<td align="right">0.0000</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Workers_Parttime
+</td>
+<td style="text-align:right;">
+13.98
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Learners_students</td>
-<td align="right">47.05</td>
-<td align="right">0.0000</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+47.05
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Driv_Lic</td>
-<td align="right">3.09</td>
-<td align="right">0.0020</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+3.09
+</td>
+<td style="text-align:right;">
+0.0020
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Model E </strong></p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">t</th>
-<th align="right">p</th>
-<th align="left">sig</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+t
+</th>
+<th style="text-align:right;">
+p
+</th>
+<th style="text-align:left;">
+sig
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Nr_People_H</td>
-<td align="right">26.10</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+26.10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Learners_students</td>
-<td align="right">48.76</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+48.76
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Driv_Lic</td>
-<td align="right">13.74</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Driv_Lic
+</td>
+<td style="text-align:right;">
+13.74
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Model F </strong></p>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">t</th>
-<th align="right">p</th>
-<th align="left">sig</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+t
+</th>
+<th style="text-align:right;">
+p
+</th>
+<th style="text-align:left;">
+sig
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">Nr_People_H</td>
-<td align="right">24.14</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Nr_People_H
+</td>
+<td style="text-align:right;">
+24.14
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="even">
-<td align="left">Workers_Fulltime</td>
-<td align="right">21.08</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Workers_Fulltime
+</td>
+<td style="text-align:right;">
+21.08
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Learners_students</td>
-<td align="right">49.77</td>
-<td align="right">0</td>
-<td align="left">TRUE</td>
+<tr>
+<td style="text-align:left;">
+Learners_students
+</td>
+<td style="text-align:right;">
+49.77
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
 </tr>
 </tbody>
 </table>

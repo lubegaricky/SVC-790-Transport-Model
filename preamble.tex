@@ -1,3 +1,9 @@
+% booktabs is normally added by pandoc's own template only when it detects
+% a markdown table in the document; since the per-model tables are now
+% emitted as raw kable() LaTeX (to avoid a longtable page-break bug), pandoc
+% never sees a table AST node and skips it, so it is loaded explicitly here.
+\usepackage{booktabs}
+
 % Minimal \needspace{<dimen>} macro (avoids depending on the needspace
 % package): if less than <dimen> of vertical space remains on the current
 % page, force a page break here instead of splitting the content below.
