@@ -401,6 +401,11 @@ table</a></li>
 (<code>broom</code> + <code>dplyr</code>) comparison table</a></li>
 </ul></li>
 <li><a href="#outputs" id="toc-outputs"><span class="toc-section-number">7</span> Outputs</a></li>
+<li><a href="#s0-scenario" id="toc-s0-scenario"><span class="toc-section-number">8</span> S0 Scenario</a>
+<ul>
+<li><a href="#trip-generation-forecast-year-2035" id="toc-trip-generation-forecast-year-2035"><span class="toc-section-number">8.1</span> Trip Generation (Forecast Year
+2035)</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -2580,6 +2585,12 @@ lower risk of overfitting and unnecessary collinearity.</p>
 <li><code>figures/scatterplots_ggplot.png</code></li>
 <li><code>model_comparison.csv</code></li>
 </ul>
+</div>
+<div id="s0-scenario" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> S0 Scenario</h1>
+<div id="trip-generation-forecast-year-2035" class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> Trip Generation
+(Forecast Year 2035)</h2>
 <pre class="r"><code>zone &lt;- 1:8
 hhs25 &lt;- c(5470, 1400, 7340, 2500, 5800, 9900, 550, 7550)
 jobs25 &lt;- c(1160, 1800, 6500, 25240, 5990, 2000, 12700, 2500)
@@ -2617,6 +2628,7 @@ print(result)</code></pre>
 <pre><code>## 2035 24h P total: 86002.74  (35.17% growth)</code></pre>
 <pre class="r"><code>cat(&quot;2035 peak P = A total:&quot;, sum(P35*0.4), &quot;\n&quot;)</code></pre>
 <pre><code>## 2035 peak P = A total: 34401.1</code></pre>
+</div>
 </div>
 
 

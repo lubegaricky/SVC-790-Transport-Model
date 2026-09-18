@@ -532,7 +532,8 @@ Outputs written to the working directory:
 - `figures/scatterplots_ggplot.png`
 - `model_comparison.csv`
 
-
+# S0 Scenario
+## Trip Generation (Forecast Year 2035)
 
 ```{r S0 Trip Data}
 zone <- 1:8
