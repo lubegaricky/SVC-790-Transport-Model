@@ -3,16 +3,16 @@ title: "Trip Generation Analysis - SVC790 Part A"
 author: "R. Lubega"
 date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
   pdf_document:
     toc: true
     toc_depth: 2
     number_sections: true
     includes:
       in_header: preamble.tex
-  html_document:
-    toc: true
-    toc_depth: 2
-    number_sections: true
 geometry: margin=1in
 fontsize: 11pt
 ---
@@ -531,3 +531,33 @@ Outputs written to the working directory:
 - `figures/scatterplots_baseR.png`
 - `figures/scatterplots_ggplot.png`
 - `model_comparison.csv`
+
+
+
+```{r S0 Trip Data}
+zone <- 1:8
+hhs25 <- c(5470, 1400, 7340, 2500, 5800, 9900, 550, 7550)
+jobs25 <- c(1160, 1800, 6500, 25240, 5990, 2000, 12700, 2500)
+g_hh <- c(2.1, 2.5, 3.2, 3.2, 3.2, 2.5, 2.1, 4.2) / 100
+g_jobs <- c(1.5, 1.9, 2.0, 2.4, 2.0, 2.0, 3.5, 2.0) / 100
+nr_people <- c(1.5, 2.5, 2.2, 3.6, 2.2, 3.2, 1.5, 3.6)
+workers_ft <- c(1.1, 0.52, 0.46, 0.95, 0.46, 0.79, 0.31, 0.95)
+learners <- c(0.35, 0.1, 0.09, 0.15, 0.09, 0.13, 0.06, 0.15)
+
+rate <- 0.811424 + 0.148495*nr_people + 0.271651*workers_ft + 1.036471*learners
+hhs35 <- hhs25 * (1 + g_hh)^10
+jobs35 <- jobs25 * (1 + g_jobs)^10
+
+P25 <- rate * hhs25
+P35 <- rate * hhs35
+scale35 <- sum(P35) / sum(jobs35)
+A35 <- jobs35 * scale35
+
+result <- data.frame(zone, hhs35 = round(hhs35,1), jobs35 = round(jobs35,1),
+                      P35 = round(P35,1), A35 = round(A35,1),
+                      P35_peak = round(P35*0.4,1), A35_peak = round(A35*0.4,1))
+print(result)
+cat("Base 24h P total:", sum(P25), "\n")
+cat("2035 24h P total:", sum(P35), sprintf(" (%.2f%% growth)\n", (sum(P35)/sum(P25)-1)*100))
+cat("2035 peak P = A total:", sum(P35*0.4), "\n")
+```
